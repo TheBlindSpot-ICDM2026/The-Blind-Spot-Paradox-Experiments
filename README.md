@@ -1,3 +1,5 @@
+# The Blind Spot Paradox Experiments
+
 ## 1. Environment and Dependencies (Prerequisites)
 
 The experiments were executed on an AMD EPYC 8224P with 192 GB RAM. To ensure bit-wise reproducibility, especially concerning the internal ADWIN clock artifact documented in the paper, we strictly pin the `river` library to version `0.23.0`.
@@ -11,7 +13,20 @@ source blindspot_env/bin/activate  # On Windows use `blindspot_env\Scripts\activ
 pip install -r requirements.txt
 ```
 
-## 2. Repository Structure
+## 2. Datasets & Data Preparation
+
+To comply with anonymous repository size limits, some large datasets are provided in a compressed format. Before running the real-world evaluations, please decompress the Bank Account Fraud (BAF) dataset.
+
+**Execute the following command from the repository root:**
+```bash
+gunzip data/baf/*.gz
+```
+
+### Data Sources
+*   **Bank Account Fraud (BAF):** The `Base.csv`, `VariantI.csv`, and `VariantII.csv` files originate from the [NeurIPS 2022 Bank Account Fraud Dataset](https://www.kaggle.com/datasets/sgpjesus/bank-account-fraud-dataset-neurips-2022?resource=download).
+*   **INSECTS Dataset:** The `abrupt_balanced.csv`, `gradual_balanced.csv`, and `incremental_reoccurring_balanced.csv` streams are sourced from the official [INSECTS repository](https://drive.google.com/drive/folders/1v-iRL6X4yWhKIn82-eS-w93wb-gxjSiz).
+
+## 3. Repository Structure
 
 ```text
 .
@@ -20,9 +35,18 @@ pip install -r requirements.txt
 ├── run_experiment_R1.sh                     
 ├── run_experiment_R4.sh
 ├── run_experiment_R5.sh
+├── data/
+│   ├── baf/
+│   │   ├── Base.csv.gz
+│   │   ├── VariantI.csv.gz
+│   │   └── VariantII.csv.gz
+│   └── insects/
+│       ├── abrupt_balanced.csv
+│       ├── gradual_balanced.csv
+│       └── incremental_reoccurring_balanced.csv
 ├── experiments/
 │   ├── R1_race_condition/
-│   └── R4_proteus_evaluation/
+│   ├── R4_proteus_evaluation/
 │   │   ├── exp_R4_main_table.py
 │   │   └── exp_R4_kswin_sweep.py
 │   └── R5_real_world_evaluation/
@@ -36,7 +60,7 @@ pip install -r requirements.txt
 │       └── exp_R5_smoke_test.py
 ├── results/
 │   ├── R1_race_condition/
-│   └── R4_proteus_evaluation/
+│   ├── R4_proteus_evaluation/
 │   │   ├── data/                            
 │   │   └── tables/
 │   └── R5_real_world_evaluation/
@@ -44,11 +68,11 @@ pip install -r requirements.txt
 │       └── tables/                        
 └── logs/
     ├── R1_race_condition/
-    └── R4_proteus_evaluation/
+    ├── R4_proteus_evaluation/
     └── R5_real_world_evaluation/
 ```
 
-## 3. Reproducing the Experiments
+## 4. Reproducing the Experiments
 
 ### Experiment R1: The Race Condition (Figure 1)
 This experiment demonstrates the "Blind Spot" paradox by simulating the race condition between the internal Adaptive Random Forest (ARF) stopping time ($\tau_{ARF}$) and the external drift detector stopping time ($\tau_{det}$).
