@@ -1,0 +1,33 @@
+[R5/BAF] River pinned to 0.23.0
+[RESUME] 270 runs recovered; resuming at chunk 9/9.
+[R5/BAF] DONE -> /home/m53/The-Blind-Spot-Paradox-Experiments/results/R5_real_world_evaluation/data/baf_results.parquet (270 runs)
+[R5/BAF] River pinned to 0.23.0
+[R5/BAF] chunk 1/9
+[Parallel(n_jobs=-1)]: Using backend LokyBackend with 48 concurrent workers.
+[Parallel(n_jobs=-1)]: Done   3 out of  30 | elapsed:  1.6min remaining: 14.1min
+[Parallel(n_jobs=-1)]: Done   7 out of  30 | elapsed:  1.6min remaining:  5.2min
+[Parallel(n_jobs=-1)]: Done  11 out of  30 | elapsed:  2.2min remaining:  3.7min
+[Parallel(n_jobs=-1)]: Done  15 out of  30 | elapsed: 25.5min remaining: 25.5min
+[Parallel(n_jobs=-1)]: Done  19 out of  30 | elapsed: 26.2min remaining: 15.2min
+[Parallel(n_jobs=-1)]: Done  23 out of  30 | elapsed: 30.5min remaining:  9.3min
+[Parallel(n_jobs=-1)]: Done  27 out of  30 | elapsed: 32.4min remaining:  3.6min
+[Parallel(n_jobs=-1)]: Done  30 out of  30 | elapsed: 33.8min finished
+[R5/BAF] chunk 2/9
+[Parallel(n_jobs=-1)]: Using backend LokyBackend with 48 concurrent workers.
+[Parallel(n_jobs=-1)]: Done   3 out of  30 | elapsed:  1.6min remaining: 14.1min
+[Parallel(n_jobs=-1)]: Done   7 out of  30 | elapsed:  2.2min remaining:  7.2min
+[Parallel(n_jobs=-1)]: Done  11 out of  30 | elapsed: 24.7min remaining: 42.7min
+[Parallel(n_jobs=-1)]: Done  15 out of  30 | elapsed: 26.3min remaining: 26.3min
+[Parallel(n_jobs=-1)]: Done  19 out of  30 | elapsed: 30.2min remaining: 17.5min
+[Parallel(n_jobs=-1)]: Done  23 out of  30 | elapsed: 31.0min remaining:  9.4min
+[Parallel(n_jobs=-1)]: Done  27 out of  30 | elapsed: 31.9min remaining:  3.5min
+[Parallel(n_jobs=-1)]: Done  30 out of  30 | elapsed: 33.2min finished
+[R5/BAF] chunk 3/9
+[Parallel(n_jobs=-1)]: Using backend LokyBackend with 48 concurrent workers.
+[Parallel(n_jobs=-1)]: Done   3 out of  30 | elapsed:  1.6min remaining: 14.5min
+[Parallel(n_jobs=-1)]: Done   7 out of  30 | elapsed: 25.2min remaining: 82.8min
+[Parallel(n_jobs=-1)]: Done  11 out of  30 | elapsed: 25.8min remaining: 44.6min
+[Parallel(n_jobs=-1)]: Done  15 out of  30 | elapsed: 26.6min remaining: 26.6min
+[Parallel(n_jobs=-1)]: Done  19 out of  30 | elapsed: 31.1min remaining: 18.0min
+[Parallel(n_jobs=-1)]: Done  23 out of  30 | elapsed: 33.0min remaining: 10.0min
+[Parallel(n_jobs=-1)]: Done  27 out of  30 | elapsed: 34.0min remaining:  3.8min
