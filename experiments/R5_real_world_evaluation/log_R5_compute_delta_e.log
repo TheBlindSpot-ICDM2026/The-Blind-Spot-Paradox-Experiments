@@ -1,9 +1,0 @@
-[R5/Delta_e] BAF ...
-  BAF Base: Delta_e = -0.0009 [-0.0026, +0.0009]
-  BAF VariantI: Delta_e = -0.0000 [-0.0011, +0.0012]
-  BAF VariantII: Delta_e = +0.0001 [-0.0014, +0.0015]
-[R5/Delta_e] INSECTS ...
-  INSECTS abrupt_balanced: Delta_e = +0.0743 [-0.1945, +0.4275]
-  INSECTS gradual_balanced: Delta_e = +0.4503 [+0.4503, +0.4503]
-  INSECTS incremental_reoccurring_balanced: Delta_e = +0.3914 [+0.3102, +0.4726]
-[R5/Delta_e] DONE -> /home/m53/The-Blind-Spot-Paradox-Experiments/results/R5_real_world_evaluation/data/delta_e.parquet

@@ -1,0 +1,14 @@
+results/
+logs/
+__pycache__/
+*.log
+*BKUP*
+!data/baf/Base.csv.gz
+!data/baf/VariantI.csv.gz
+!data/baf/VariantII.csv.gz
+!data/insects/abrupt_balanced.csv
+!data/insects/gradual_balanced.csv
+!data/insects/incremental_reoccurring_balanced.csv
+data/baf/Base.csv
+data/baf/VariantI.csv
+data/baf/VariantII.csv
