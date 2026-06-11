@@ -182,9 +182,10 @@ def make_rf(seed):
 # ─── 14 Pipelines per (transition, seed) ──────────────────────────────────────
 def process_transition_seed(trans, seed):
     # Strict RNG isolation per worker (Bit-wise reproducibility).
-    # Maintaining Mersenne Twister (legacy) guarantees strict alignment with the manuscript.
-    np.random.seed(seed)
-    random.seed(seed)
+    # C-Level Overflow Prevention: apply modulo for Cython-compiled extensions
+    safe_seed = seed % (2**31 - 1)
+    np.random.seed(safe_seed)
+    random.seed(safe_seed)
     
     from_t, to_t, w, name = trans
     out = []
@@ -399,7 +400,9 @@ def main():
     print(sign[['pipeline_A', 'pipeline_B', 'n_det_A', 'n_det_B', 'sign_test_p']].to_string(index=False))
 
     # Aggregation + Bootstrap (seeded) + Table generation
-    np.random.seed(BOOTSTRAP_SEED)
+    # C-Level Overflow Prevention applied to the bootstrap global seed
+    safe_bootstrap_seed = BOOTSTRAP_SEED % (2**31 - 1)
+    np.random.seed(safe_bootstrap_seed)
     agg = df.groupby(['Detector', 'Clock', 'Calibration']).agg(
         F1_mean=('F1', 'mean'), F1_ci=('F1', bootstrap_ci_half_width),
         ADD_mean=('ADD', lambda x: np.nan if x.dropna().empty else x.dropna().mean()),

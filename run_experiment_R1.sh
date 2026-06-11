@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Script: run_experiment_R1.sh
-# Objective: Reproduce Figure 1 for ICDM 2026 (The Blind Spot Paradox).
-#            Simulates the race condition between internal ARF adaptation (tau_ARF)
-#            and external CUSUM detection (tau_det) across critical thresholds.
-# Outputs:   - Data: results/R1_race_condition/data/R1_v7_protocol_diff.parquet
-#            - Plot: results/R1_race_condition/figures/Fig_R1_v3_tau_arf_distribution.png
+# Objective: Reproduce Figure 1 (Race Condition & Starvation) for ICDM 2026.
+# Outputs:   - Data: results/R1_race_condition/data/*.parquet
+#            - Figure: results/R1_race_condition/figures/Fig_R1_v3_tau_arf_distribution.png
 # Execution: ./run_experiment_R1.sh
+# Determinism: PYTHONHASHSEED is pinned for bit-wise reproducibility.
 # ==============================================================================
 
 set -e # Exit immediately if a command exits with a non-zero status
 set -o pipefail
+
+# [IEEE/ICDM FAIR Compliance] Pinned dictionary hashing for bit-wise reproducibility
+export PYTHONHASHSEED=0
 
 # 1. Structure Initialization
 echo "[INFO] Initializing repository structure..."

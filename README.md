@@ -33,6 +33,7 @@ gunzip data/baf/*.gz
 ├── requirements.txt
 ├── README.md
 ├── run_experiment_R1.sh                     
+├── run_experiment_R2.sh                     
 ├── run_experiment_R3.sh
 ├── run_experiment_R4.sh
 ├── run_experiment_R5.sh
@@ -47,6 +48,8 @@ gunzip data/baf/*.gz
 │       └── incremental_reoccurring_balanced.csv
 ├── experiments/
 │   ├── R1_race_condition/
+│   ├── R2_instrumented_blind_spot/
+│   │   └── exp_R2_instrumented_blind_spot.py
 │   ├── R3_regime_crossover/
 │   │   └── exp_R3_regime_crossover.py
 │   ├── R4_proteus_evaluation/
@@ -63,6 +66,9 @@ gunzip data/baf/*.gz
 │       └── exp_R5_smoke_test.py
 ├── results/
 │   ├── R1_race_condition/
+│   ├── R2_instrumented_blind_spot/
+│   │   ├── data/                            
+│   │   └── figures/
 │   ├── R3_regime_crossover/
 │   │   ├── data/                            
 │   │   └── figures/
@@ -74,6 +80,7 @@ gunzip data/baf/*.gz
 │       └── tables/                        
 └── logs/
     ├── R1_race_condition/
+    ├── R2_instrumented_blind_spot/
     ├── R3_regime_crossover/
     ├── R4_proteus_evaluation/
     └── R5_real_world_evaluation/
@@ -94,6 +101,20 @@ chmod +x run_experiment_R1.sh
 **Expected Artifacts:**
 - **Data:** `results/R1_race_condition/data/R1_v7_protocol_diff.parquet`
 - **Figure:** `results/R1_race_condition/figures/Fig_R1_v3_tau_arf_distribution.png` (Directly corresponds to **Figure 1** in the manuscript).
+
+### Experiment R2: Instrumented Asymptotic Complexity & The Blind Spot (Figures 2A, 2B, 2C)
+This experiment directly instruments the ARF's internal drift tracking versus the external CUSUM (PHT) across a continuous sweep of drift magnitudes ($\Delta e$). It isolates the Starvation Effect under high CUSUM thresholds ($\lambda=50$) and exposes the paradoxical failure increase at intermediate thresholds ($\lambda=25$).
+
+To reproduce the instrumented tracking and re-render the 3-panel figures:
+
+```bash
+chmod +x run_experiment_R2.sh
+./run_experiment_R2.sh
+```
+
+**Expected Artifacts:**
+- **Data:** `results/R2_instrumented_blind_spot/data/R2_instrumented_*.parquet`
+- **Figures:** `results/R2_instrumented_blind_spot/figures/Fig_R2_A_PHT_ARF.png`, `Fig_R2_B_PHT_ARF.png`, and `Fig_R2_C_PHT_ARF.png` (Directly correspond to **Figures 2A, 2B, 2C** in the manuscript).
 
 ### Experiment R3: The Regime Crossover & Non-Adaptive RF (Figure 3)
 This experiment deconstructs the paradox continuously across drift magnitudes ($\Delta e \in [0.02, 0.50]$) over Bernoulli streams. It reconciles the Blind Spot hypothesis with classical literature by mapping three regimes (Weak Signal, Safe Zone, Blind Spot). Crucially, it validates the architectural resolution proposed in the paper: deploying a Non-Adaptive Random Forest (static bagging of Hoeffding Trees) entirely eradicates the Starvation Effect on CUSUM monitors, though at an expected post-drift predictive cost.

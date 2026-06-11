@@ -137,8 +137,10 @@ def make_arf(seed, c): return forest.ARFClassifier(n_models=10, seed=seed, drift
 # ─── Targeted Execution Loop (Alpha Sweep) ────────────────────────────────────
 def process_transition_seed(trans, seed):
     # Strict RNG isolation per worker for bit-wise reproducibility
-    np.random.seed(seed)
-    random.seed(seed)
+    # C-Level Overflow Prevention: apply modulo for Cython-compiled extensions
+    safe_seed = seed % (2**31 - 1)
+    np.random.seed(safe_seed)
+    random.seed(safe_seed)
     
     from_t, to_t, w, name = trans
     out = []
@@ -247,7 +249,9 @@ def main():
     ])
     sign.to_csv(SIGN_CSV, index=False)
 
-    np.random.seed(BOOTSTRAP_SEED)
+    # C-Level Overflow Prevention applied to the bootstrap global seed
+    safe_bootstrap_seed = BOOTSTRAP_SEED % (2**31 - 1)
+    np.random.seed(safe_bootstrap_seed)
     agg = df.groupby(['Detector', 'Clock', 'Calibration']).agg(
         F1_mean=('F1', 'mean'), F1_ci=('F1', bootstrap_ci_half_width),
         ADD_mean=('ADD', lambda x: np.nan if x.dropna().empty else x.dropna().mean()),

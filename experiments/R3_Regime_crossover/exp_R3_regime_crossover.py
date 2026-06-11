@@ -1,5 +1,11 @@
 # Priorite_9_solution_non_adaptive_rf.py
 
+"""
+Experiment R3: Regime Crossover & Non-Adaptive RF Solution.
+Reproduces Figure 3 of the manuscript "The Blind Spot Paradox".
+Strictly adheres to IEEE/ICDM FAIR reproducibility standards.
+"""
+import random
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
@@ -32,12 +38,29 @@ N_SEEDS = 100
 DELTA_E_VALUES = np.linspace(0.02, 0.50, 15)
 
 def compute_boundary_shift(delta_e):
+    """
+    Computes the theoretical decision boundary shift 'b' required to induce
+    a specific effective error jump (\Delta e) under a Gaussian feature distribution.
+    
+    Mathematical formulation: \Delta e = \Phi(b/\sqrt{2}) - 0.5, 
+    where \Phi is the standard Normal Cumulative Distribution Function (CDF).
+    """
     safe_delta = min(delta_e, 0.4999)
     return np.sqrt(2) * norm.ppf(safe_delta + 0.5)
 
 def run_single_seed(seed, delta_e, pipeline_type):
+    """
+    Executes a single stream evaluation strictly isolated by a cryptographic seed.
+    Simulates an abrupt concept drift mapping to the theoretical \Delta e.
+    """
+    # 100% Determinism (R5 Standard): Lock global RNGs per worker to ensure River's
+    # internal stochasticity (Poisson bagging, tree splits) is bit-wise reproducible.
+    int_seed = int(seed)
+    random.seed(int_seed)
+    np.random.seed(int_seed % (2**32 - 1))
+    
+    rng = np.random.default_rng(int_seed)
     b = compute_boundary_shift(delta_e)
-    rng = np.random.default_rng(seed)  # Modern, deterministic numpy RNG
     
     X0 = rng.standard_normal(N_STEPS)
     X1 = rng.standard_normal(N_STEPS)
@@ -60,17 +83,24 @@ def run_single_seed(seed, delta_e, pipeline_type):
     
     for t in range(N_STEPS):
         x = {'x0': X0[t], 'x1': X1[t]}
+        
+        # Inject abrupt concept drift at DRIFT_TIME by shifting the decision boundary
         y = 1 if (X0[t] + X1[t]) > (0 if t < DRIFT_TIME else b) else 0
             
         y_pred = model.predict_one(x) or 0
         error = 0 if y_pred == y else 1
         
+        # The external cumulative-evidence monitor observes the binary error stream
         pht.update(error)
         if pht.drift_detected:
             if t < DRIFT_TIME:
+                # Quantifies the "Noise Filter" capability (False Alarms)
                 alarms_pre += 1
             elif DRIFT_TIME <= t <= DRIFT_TIME + TOLERANCE:
+                # Validates detection survival against the Starvation Effect
                 detected_in_window = 1
+            
+            # Reset detector state post-alarm to prevent cascade triggering
             pht = drift.PageHinkley(threshold=25.0, delta=0.005)
             
         if DRIFT_TIME <= t <= DRIFT_TIME + TOLERANCE:
@@ -87,10 +117,15 @@ def main():
     
     # Pre-allocate records for exact tabular tracing
     data_records = []
+    
+    # R5 Standard Deterministic Seed Pool via NumPy SeedSequence (joblib-safe)
+    # Extracted with modulo to prevent C-level overflow in legacy np.random.seed
+    seq = np.random.SeedSequence(42)
+    worker_seeds = [int(s.generate_state(1)[0]) % (2**31 - 1) for s in seq.spawn(N_SEEDS)]
 
     for de in DELTA_E_VALUES:
         for p in pipes:
-            res = Parallel(n_jobs=-1)(delayed(run_single_seed)(s, de, p) for s in range(N_SEEDS))
+            res = Parallel(n_jobs=-1)(delayed(run_single_seed)(worker_seeds[s], de, p) for s in range(N_SEEDS))
             miss_arr, fp_arr, acc_arr = zip(*res)
             
             # Record at seed-level (optional for full trace) and aggregate

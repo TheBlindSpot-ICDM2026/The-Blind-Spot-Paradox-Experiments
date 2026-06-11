@@ -3,6 +3,7 @@ exp_R1_generate_data.py
 Extended Diagnostic 3: Isolate the evolution of P(tau_arf < tau_det) over a lambda grid,
 with truncation bias correction for the Share Blind Spot computation.
 """
+import random
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
@@ -32,10 +33,20 @@ class StrictCUSUM:
         if self.S >= self.threshold: self.drift_detected = True
 
 def run_diff_test(seed, lambda_val):
-    rng = np.random.default_rng(seed)
+    # [IEEE/ICDM FAIR Compliance] Worker-Level Global Locking & C-Level Overflow Prevention
+    # 1. Prevent Cython/C integer overflow for legacy components (max 32-bit signed int)
+    safe_seed = int(seed) % (2**31 - 1)
+    
+    # 2. Lock global singletons inside the parallel worker
+    random.seed(safe_seed)
+    np.random.seed(safe_seed)
+    
+    # 3. Initialize modern local RNG
+    rng = np.random.default_rng(safe_seed)
+    
     b_shift = np.sqrt(2) * norm.ppf(0.5 + DELTA_E)
     
-    arf = forest.ARFClassifier(n_models=10, seed=seed, drift_detector=drift.ADWIN(clock=1), warning_detector=drift.ADWIN(clock=1))
+    arf = forest.ARFClassifier(n_models=10, seed=safe_seed, drift_detector=drift.ADWIN(clock=1), warning_detector=drift.ADWIN(clock=1))
     cusum_external_fixed = StrictCUSUM(0.05, DELTA_P, lambda_val)
     
     errors_warmup = []

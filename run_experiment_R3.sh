@@ -5,10 +5,12 @@
 # Outputs:   - Data: results/R3_regime_crossover/data/R3_regime_crossover_metrics.parquet
 #            - Figure: results/R3_regime_crossover/figures/Fig13_RF_Solution.png
 # Execution: ./run_experiment_R3.sh
+# Determinism: PYTHONHASHSEED is pinned for bit-wise reproducibility.
 # ==============================================================================
 
 set -e
 set -o pipefail
+export PYTHONHASHSEED=0
 
 echo "[INFO] Initializing repository structure for Experiment R3..."
 EXP_NAME="R3_regime_crossover"
