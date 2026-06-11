@@ -102,3 +102,21 @@ chmod +x run_experiment_R4.sh
 - **Main Table:** `results/R4_proteus_evaluation/tables/exp_R4_table_I_III_merged.tex` (Directly corresponds to **Table I**).
 - **KSWIN Sweep Table:** `results/R4_proteus_evaluation/tables/exp_R4_table_KSWIN_alpha_sweep.tex`
 - **Significance Tests:** `exp_R4_seed_level_tests.csv` and `exp_R4_seed_level_tests_KSWIN_alpha_sweep.csv` in `results/R4_proteus_evaluation/data/`.
+
+### Experiment R5: Real-World Evaluation on BAF & INSECTS (Table II)
+This experiment validates the starvation/flooding dichotomy on six real-world streams. It contrasts a non-adaptive Hoeffding Tree (HT) against the Adaptive Random Forest (ARF), under both a CUSUM-family monitor (PageHinkley) and a windowed monitor (ADWIN), over 30 seeds per cell. The reoccurring stream is scored on its $K{=}2$ in-stream transitions: the two canonical positions lying beyond the stream length are phantom drifts, removed by the valid-window filter (consistent with the Table II caption).
+
+To reproduce the full pipeline (integrity checks, BAF/INSECTS evaluation, adaptive $\Delta e$ estimation, flooding decomposition, and the final LaTeX table body), execute the orchestrator from the repository root:
+
+```bash
+chmod +x run_experiment_R5.sh
+./run_experiment_R5.sh
+```
+
+The orchestrator pins `PYTHONHASHSEED=0`, and every cell pins its `random`/`numpy`/`river` seed through `numpy.random.SeedSequence(42)`, guaranteeing bit-wise reproducibility. The BAF stage is checkpointed and long-running (~4.5 h on the reference server); the INSECTS stage completes in minutes.
+
+**Expected Artifacts:**
+- **Table Body:** `results/R5_real_world_evaluation/tables/table2_real_data_summary.tex` (the `tabular` body of **Table II**; the enclosing `table*` environment and caption are maintained in the manuscript).
+- **Table Values:** `results/R5_real_world_evaluation/tables/table2_values.csv` (raw values, paired difference, and seed-level sign test).
+- **Per-run metrics:** `baf_results.parquet`, `insects_results.parquet`, `insects_per_episode.parquet`, `delta_e.parquet`, `flooding_decomposition.parquet` in `results/R5_real_world_evaluation/data/`.
+- **Manuscript mapping:** Table II (`tab:real_data_summary`) and the flooding analysis of Section IV-C (genuine detection vs false-alarm flooding) are derived directly from these artifacts.
