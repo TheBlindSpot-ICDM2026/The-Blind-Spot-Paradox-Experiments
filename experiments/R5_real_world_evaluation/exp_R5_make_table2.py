@@ -123,8 +123,48 @@ def main():
             "sign_test_p": p, "seeds_favor_HT": wins, "seeds_favor_ARF": loss})
 
     pd.DataFrame(rows_csv).to_csv(cfg.OUT_TABLE2_CSV, index=False)
+
+    # Extraction dynamique des métriques de flooding pour la légende (MLOps SSoT)
+    gb_arf = flood[(flood["variant"] == "gradual_balanced") & (flood["pipeline"] == "pht_arf_c1")].iloc[0]
+    gb_ht  = flood[(flood["variant"] == "gradual_balanced") & (flood["pipeline"] == "pht_ht")].iloc[0]
+
+    arf_alarms = int(round(gb_arf["n_alarms"]))
+    arf_prec   = round(gb_arf["precision"], 3)
+    ht_alarms  = int(round(gb_ht["n_alarms"]))
+    ht_prec    = round(gb_ht["precision"], 2)
+
+    caption = (
+        r"Real-world validation across six streams ($30$ seeds/cell). Drift positions follow Souza et al.~\cite{souza_insects_2020} Table~2 "
+        r"(\emph{reoccurring\_balanced} retains $K{=}2$ in-stream transitions). F1 numerator is deterministic here; per-cell dispersion "
+        r"reflects classifier initialization. Significance: seed-level sign test. The $c{=}1$ clock degrades monitoring via "
+        r"\emph{false-alarm flooding} (precision collapse), not starvation: on \emph{gradual\_balanced}, PHT+ARF($c{=}1$) emits "
+        f"{arf_alarms} alarms for one drift (precision ${arf_prec}$) vs {ht_alarms} for PHT+HT (${ht_prec}$). "
+        r"$^{\ast}$\emph{abrupt\_balanced} is a weak witness (heterogeneous, partly negative jumps; neither beats false-alarm rate)."
+    )
+
+    latex_table = [
+        r"\begin{table*}[ht]",
+        r"  \centering",
+        f"  \\caption{{{caption}}}",
+        r"  \label{tab:real_data_summary}",
+        r"  \small",
+        r"  \setlength{\tabcolsep}{4pt}",
+        r"  \makebox[\textwidth][c]{%",
+        r"    \begin{tabular}{@{}lcccccc@{}}",
+        r"      \toprule",
+        r"      Variant                       & $\Delta e$ (adaptive) & F1(PHT+HT) & F1(PHT+ARF$_{c=1}$) & F1(ADW+ARF$_{c=1}$) & Ratio HT/ARF     & Sign test $p$ (seed) \\",
+        r"      \midrule"
+    ]
+    latex_table.extend(tex_lines)
+    latex_table.extend([
+        r"      \bottomrule",
+        r"    \end{tabular}%",
+        r"  }",
+        r"\end{table*}"
+    ])
+
     with open(cfg.OUT_TABLE2_TEX, "w") as f:
-        f.write("\n".join(tex_lines) + "\n")
+        f.write("\n".join(latex_table) + "\n")
 
     print("=== Table II values (to report) ===")
     print(pd.DataFrame(rows_csv).to_string(index=False))
