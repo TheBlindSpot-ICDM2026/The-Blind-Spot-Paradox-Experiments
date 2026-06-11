@@ -33,6 +33,7 @@ gunzip data/baf/*.gz
 ├── requirements.txt
 ├── README.md
 ├── run_experiment_R1.sh                     
+├── run_experiment_R3.sh
 ├── run_experiment_R4.sh
 ├── run_experiment_R5.sh
 ├── data/
@@ -46,6 +47,8 @@ gunzip data/baf/*.gz
 │       └── incremental_reoccurring_balanced.csv
 ├── experiments/
 │   ├── R1_race_condition/
+│   ├── R3_regime_crossover/
+│   │   └── exp_R3_regime_crossover.py
 │   ├── R4_proteus_evaluation/
 │   │   ├── exp_R4_main_table.py
 │   │   └── exp_R4_kswin_sweep.py
@@ -60,6 +63,9 @@ gunzip data/baf/*.gz
 │       └── exp_R5_smoke_test.py
 ├── results/
 │   ├── R1_race_condition/
+│   ├── R3_regime_crossover/
+│   │   ├── data/                            
+│   │   └── figures/
 │   ├── R4_proteus_evaluation/
 │   │   ├── data/                            
 │   │   └── tables/
@@ -68,6 +74,7 @@ gunzip data/baf/*.gz
 │       └── tables/                        
 └── logs/
     ├── R1_race_condition/
+    ├── R3_regime_crossover/
     ├── R4_proteus_evaluation/
     └── R5_real_world_evaluation/
 ```
@@ -87,6 +94,20 @@ chmod +x run_experiment_R1.sh
 **Expected Artifacts:**
 - **Data:** `results/R1_race_condition/data/R1_v7_protocol_diff.parquet`
 - **Figure:** `results/R1_race_condition/figures/Fig_R1_v3_tau_arf_distribution.png` (Directly corresponds to **Figure 1** in the manuscript).
+
+### Experiment R3: The Regime Crossover & Non-Adaptive RF (Figure 3)
+This experiment deconstructs the paradox continuously across drift magnitudes ($\Delta e \in [0.02, 0.50]$) over Bernoulli streams. It reconciles the Blind Spot hypothesis with classical literature by mapping three regimes (Weak Signal, Safe Zone, Blind Spot). Crucially, it validates the architectural resolution proposed in the paper: deploying a Non-Adaptive Random Forest (static bagging of Hoeffding Trees) entirely eradicates the Starvation Effect on CUSUM monitors, though at an expected post-drift predictive cost.
+
+To reproduce the crossover data and re-render the 3-panel figure:
+
+```bash
+chmod +x run_experiment_R3.sh
+./run_experiment_R3.sh
+```
+
+**Expected Artifacts:**
+- **Data:** `results/R3_regime_crossover/data/R3_regime_crossover_metrics.parquet`
+- **Figure:** `results/R3_regime_crossover/figures/Fig13_RF_Solution.png` (Directly corresponds to **Figure 3** in the manuscript).
 
 ### Experiment R4: Heteroscedastic ARMA-GARCH Streams Evaluation (Table I & KSWIN Sweep)
 This experiment validates the agnostic nature of the Starvation Effect across cumulative-evidence detectors (PHT, EDDM) against heteroscedastic ProteuS streams, and demonstrates the structural resolution provided by the distributional KSWIN monitor across an $\alpha$-sensitivity sweep.

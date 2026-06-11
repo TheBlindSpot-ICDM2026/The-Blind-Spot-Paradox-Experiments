@@ -2,6 +2,8 @@ __pycache__/
 *.pyc
 *.log
 *BKUP*
-data/
-# results/
-logs/
+/data/
+/logs/
+
+*.csv.gz
+*.gz
