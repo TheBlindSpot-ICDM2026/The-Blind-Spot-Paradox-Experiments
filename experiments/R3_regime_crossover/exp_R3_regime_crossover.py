@@ -1,6 +1,6 @@
 # Priorite_9_solution_non_adaptive_rf.py
 
-"""
+r"""
 Experiment R3: Regime Crossover & Non-Adaptive RF Solution.
 Reproduces Figure 3 of the manuscript "The Blind Spot Paradox".
 Strictly adheres to IEEE/ICDM FAIR reproducibility standards.
@@ -38,7 +38,7 @@ N_SEEDS = 100
 DELTA_E_VALUES = np.linspace(0.02, 0.50, 15)
 
 def compute_boundary_shift(delta_e):
-    """
+    r"""
     Computes the theoretical decision boundary shift 'b' required to induce
     a specific effective error jump (\Delta e) under a Gaussian feature distribution.
     
@@ -49,8 +49,8 @@ def compute_boundary_shift(delta_e):
     return np.sqrt(2) * norm.ppf(safe_delta + 0.5)
 
 def run_single_seed(seed, delta_e, pipeline_type):
-    """
-    Executes a single stream evaluation strictly isolated by a cryptographic seed.
+    r"""
+    Executes a single stream evaluation strictly isolated by a deterministic seed.
     Simulates an abrupt concept drift mapping to the theoretical \Delta e.
     """
     # 100% Determinism (R5 Standard): Lock global RNGs per worker to ensure River's
@@ -59,11 +59,13 @@ def run_single_seed(seed, delta_e, pipeline_type):
     random.seed(int_seed)
     np.random.seed(int_seed % (2**32 - 1))
     
-    rng = np.random.default_rng(int_seed)
+    # AE Visual Match: Reverting to Legacy RandomState (MT19937) instead of PCG64
+    # to exactly reconstruct the data streams X0, X1 used in the submitted manuscript.
+    rng = np.random.RandomState(int_seed)
     b = compute_boundary_shift(delta_e)
     
-    X0 = rng.standard_normal(N_STEPS)
-    X1 = rng.standard_normal(N_STEPS)
+    X0 = rng.randn(N_STEPS)
+    X1 = rng.randn(N_STEPS)
     
     if pipeline_type == 'HT':
         model = tree.HoeffdingTreeClassifier()
@@ -118,10 +120,9 @@ def main():
     # Pre-allocate records for exact tabular tracing
     data_records = []
     
-    # R5 Standard Deterministic Seed Pool via NumPy SeedSequence (joblib-safe)
-    # Extracted with modulo to prevent C-level overflow in legacy np.random.seed
-    seq = np.random.SeedSequence(42)
-    worker_seeds = [int(s.generate_state(1)[0]) % (2**31 - 1) for s in seq.spawn(N_SEEDS)]
+    # AE Visual Match: Using the original naive 0-99 sequence to perfectly map 
+    # the feature streams from the manuscript's submission run.
+    worker_seeds = list(range(N_SEEDS))
 
     for de in DELTA_E_VALUES:
         for p in pipes:
@@ -184,7 +185,7 @@ def main():
         if idx == 0: ax.legend(loc='center right', fontsize=9)
 
     plt.tight_layout()
-    fig_path = FIG_DIR / 'Fig13_RF_Solution.png'
+    fig_path = FIG_DIR / 'Fig_R3_Regime_Crossover.png'
     plt.savefig(fig_path, bbox_inches='tight', dpi=300)
     print(f"[SUCCESS] RF Solution plot saved to {fig_path}")
 

@@ -3,7 +3,7 @@
 # Script: run_experiment_R3.sh
 # Objective: Reproduce Figure 3 (Regime Crossover & Non-Adaptive RF Solution).
 # Outputs:   - Data: results/R3_regime_crossover/data/R3_regime_crossover_metrics.parquet
-#            - Figure: results/R3_regime_crossover/figures/Fig13_RF_Solution.png
+#            - Figure: results/R3_regime_crossover/figures/Fig_R3_Regime_Crossover.png
 # Execution: ./run_experiment_R3.sh
 # Determinism: PYTHONHASHSEED is pinned for bit-wise reproducibility.
 # ==============================================================================

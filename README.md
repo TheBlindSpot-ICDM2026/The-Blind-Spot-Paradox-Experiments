@@ -128,7 +128,7 @@ chmod +x run_experiment_R3.sh
 
 **Expected Artifacts:**
 - **Data:** `results/R3_regime_crossover/data/R3_regime_crossover_metrics.parquet`
-- **Figure:** `results/R3_regime_crossover/figures/Fig13_RF_Solution.png` (Directly corresponds to **Figure 3** in the manuscript).
+- **Figure:** `results/R3_regime_crossover/figures/Fig_R3_Regime_Crossover.png` (Directly corresponds to **Figure 3** in the manuscript).
 
 ### Experiment R4: Heteroscedastic ARMA-GARCH Streams Evaluation (Table I & KSWIN Sweep)
 This experiment validates the agnostic nature of the Starvation Effect across cumulative-evidence detectors (PHT, EDDM) against heteroscedastic ProteuS streams, and demonstrates the structural resolution provided by the distributional KSWIN monitor across an $\alpha$-sensitivity sweep.
