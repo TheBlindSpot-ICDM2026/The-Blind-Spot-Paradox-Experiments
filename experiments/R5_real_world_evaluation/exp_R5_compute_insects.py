@@ -1,11 +1,10 @@
 # exp_R5_compute_insects.py
-"""INSECTS real-world evaluation, fused module. Replaces the three Sprint-3/P2
-scripts (compute_insects, compute_insects_reoccurring, P2_insects_per_episode):
-one simulation per cell yields BOTH the aggregate detection metrics and, for the
-two blind-spot pipelines, the per-episode decomposition used by the flooding
-analysis. Grid: 3 variants x 30 seeds x 3 pipelines = 270 runs (one-shot, no
-checkpoint, per arbitrage G3). Reoccurring F1 is scored on the phantom-free K=2
-ground truth (G1-B)."""
+"""INSECTS real-world evaluation, fused module: one simulation per cell yields
+BOTH the aggregate detection metrics and, for the two blind-spot pipelines, the
+per-episode decomposition used by the flooding analysis. Grid: 3 variants x 30
+seeds x 3 pipelines = 270 runs (one-shot, no checkpointing; completes in
+minutes). Reoccurring F1 is scored on the phantom-free K=2 in-stream ground
+truth."""
 import sys
 import numpy as np
 import pandas as pd

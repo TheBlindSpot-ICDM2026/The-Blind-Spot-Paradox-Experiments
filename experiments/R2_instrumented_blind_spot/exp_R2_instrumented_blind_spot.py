@@ -38,13 +38,11 @@ BOUNDARY_SHIFTS = np.linspace(0.1, 4.0, 20)
 # Restoring the naive sequence to match the submitted PDF's exact fitted coefficients (e.g., 18.5)
 SEEDS = list(range(1, 101))
 
-P_PRE = 0.50 # Under H0 (x0+x1>0), the binary prediction has maximum variance (Bernoulli 0.5)
-
 BLUE, ORANGE, RED, GREEN, GRAY = '#04617b', '#E8A000', '#C62828', '#2E7D32', '#546E7A'
 plt.rcParams.update({'figure.dpi': 300, 'font.family': 'sans-serif', 'font.size': 11,
                      'axes.spines.top': False, 'axes.spines.right': False, 'mathtext.fontset': 'stix'})
 
-# ─── Implémentation Stricte CUSUM ──────────────────────────────────────────
+# ─── Strict CUSUM Implementation ──────────────────────────────────────────
 class StrictCUSUM:
     def __init__(self, p_pre, delta, threshold):
         self.S = 0.0; self.p_pre = p_pre; self.delta = delta

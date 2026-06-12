@@ -91,7 +91,7 @@ def run_evaluation(pipeline_name, seed, feature_stream, warmup_steps, none_fill)
     feature_stream : iterable yielding (x_dict, y) for the WHOLE stream.
     Returns (detections, error_stream_full, lambda_val).
 
-    Logic (identical to the validated Sprint-3 loop): warm-up -> calibrate the external monitor -> stream; on a detected drift,
+    Logic: warm-up -> calibrate the external monitor -> stream; on a detected drift,
     reset the external monitor and reset (tree) or clone (ARF) the classifier.
     # Determinism hardening: pin the global RNGs per cell so that any unseeded draw
     # on river's ARF clone / tree-spawn path is reproducible across process runs."""

@@ -124,7 +124,7 @@ def main():
 
     pd.DataFrame(rows_csv).to_csv(cfg.OUT_TABLE2_CSV, index=False)
 
-    # Extraction dynamique des métriques de flooding pour la légende (MLOps SSoT)
+    # Dynamic extraction of the flooding metrics for the caption (single source of truth)
     gb_arf = flood[(flood["variant"] == "gradual_balanced") & (flood["pipeline"] == "pht_arf_c1")].iloc[0]
     gb_ht  = flood[(flood["variant"] == "gradual_balanced") & (flood["pipeline"] == "pht_ht")].iloc[0]
 

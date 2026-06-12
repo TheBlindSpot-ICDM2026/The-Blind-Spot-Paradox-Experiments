@@ -137,4 +137,4 @@ if __name__ == "__main__":
         f.write("# Experiment R1: Share Blind Spot Evolution\n\n")
         f.write(agg.to_markdown())
         
-    print(f"[SUCCESS] Diagnostic saved to: {output_parquet}")
+    print(f"[SUCCESS] Diagnostic saved to: {output_md}")

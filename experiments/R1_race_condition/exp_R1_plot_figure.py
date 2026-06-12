@@ -1,9 +1,9 @@
 """
 exp_R1_plot_figure.py
-Finalized plot generator (strict filtering, annotated).
-v7: Kaplan-Meier for ARL0 and ADD (correction of the downward bias of the conditional 
-uncensored median which asymmetrically penalized HT vs ARF).
-Reference: Kaplan & Meier (1958), JASA.
+Renders Figure 1 (race condition) from R1_race_condition.parquet: one panel per
+lambda showing the joint stopping times (tau_ARF, tau_det) on a broken linear
+x-axis, with a deterministic 2D jitter (one seeded generator per lambda panel)
+applied to the censored/starved runs to keep the scatter cloud readable.
 """
 import pandas as pd
 import matplotlib

@@ -1,4 +1,4 @@
-# Priorite_9_solution_non_adaptive_rf.py
+# exp_R3_regime_crossover.py
 
 r"""
 Experiment R3: Regime Crossover & Non-Adaptive RF Solution.

@@ -2,7 +2,7 @@
 
 ## 1. Environment and Dependencies (Prerequisites)
 
-The experiments were executed on an AMD EPYC 8224P with 192 GB RAM. To ensure bit-wise reproducibility, especially concerning the internal ADWIN clock artifact documented in the paper, we strictly pin the `river` library to version `0.23.0`.
+The experiments were executed on an AMD EPYC 8224P with 192 GB RAM under **Python 3.12**. To ensure bit-wise reproducibility, especially concerning the internal ADWIN clock artifact documented in the paper, we strictly pin the `river` library to version `0.23.0`. The interpreter version is part of the determinism contract: the RNG-overflow guards in the scripts assume Python 3.12 / NumPy 1.26 native `uint32` handling.
 
 ```bash
 # It is highly recommended to use a virtual environment
@@ -47,9 +47,9 @@ gunzip data/baf/*.gz
 │       ├── gradual_balanced.csv
 │       └── incremental_reoccurring_balanced.csv
 ├── experiments/
-│   └── R1_race_condition/
-│       ├── exp_R1_generate_data.py
-│       └── exp_R1_plot_figure.py
+│   ├── R1_race_condition/
+│   │   ├── exp_R1_generate_data.py
+│   │   └── exp_R1_plot_figure.py
 │   ├── R2_instrumented_blind_spot/
 │   │   └── exp_R2_instrumented_blind_spot.py
 │   ├── R3_regime_crossover/
@@ -109,10 +109,10 @@ chmod +x run_experiment_R1.sh
 
 > 💡 **Reviewer Transparency Note regarding Figure 1 (Jitter Effect):**
 > The generated figure perfectly reproduces the exact $\tau_{ARF}$ and $\tau_{det}$ stopping times reported in the submitted paper (green and red markers match bit-wise). However, you may notice a slight visual difference in the exact placement of the gray crosses ("Starved" / Censored runs at the far right) compared to the submitted PDF. 
-> This is expected and strictly visual. In the original research script, these censored crosses were scattered using an unseeded random jitter to prevent overplotting. To comply with rigorous Artifact Evaluation standards, this repository explicitly seeds the jitter generator (`rng_jitter = np.random.default_rng(42)`) to guarantee a deterministic, bit-wise identical output PNG across all future runs. The underlying mathematical count of starved runs remains perfectly identical.
+> This is expected and strictly visual. In the original research script, these censored crosses were scattered using an unseeded random jitter to prevent overplotting. To comply with rigorous Artifact Evaluation standards, this repository explicitly seeds the jitter generator (one independent generator per $\lambda$ panel: `rng_jitter = np.random.default_rng(int(l) * 42)`) to guarantee a deterministic, bit-wise identical output PNG across all future runs. The underlying mathematical count of starved runs remains perfectly identical.
 
 ### Experiment R2: Instrumented Asymptotic Complexity & The Blind Spot (Figures 2A, 2B, 2C)
-This experiment directly instruments the ARF's internal drift tracking versus the external CUSUM (PHT) across a continuous sweep of drift magnitudes ($\Delta e$). It isolates the Starvation Effect under high CUSUM thresholds ($\lambda=50$) and exposes the paradoxical failure increase at intermediate thresholds ($\lambda=25$).
+This experiment directly instruments the ARF's internal drift tracking versus the external CUSUM (PHT) across a continuous sweep of drift magnitudes ($\Delta e$). It isolates the Starvation Effect under high CUSUM thresholds ($\lambda=50$, Figure 2A), exposes the paradoxical failure increase at intermediate thresholds ($\lambda=25$, Figure 2B), and recovers the safe zone under a hyper-reactive threshold ($\lambda=8$, Figure 2C).
 
 To reproduce the instrumented tracking and re-render the 3-panel figures:
 
@@ -171,3 +171,11 @@ The orchestrator pins `PYTHONHASHSEED=0`, and every cell pins its `random`/`nump
 - **Table Values:** `results/R5_real_world_evaluation/tables/table2_values.csv` (raw values, paired difference, and seed-level sign test).
 - **Per-run metrics:** `baf_results.parquet`, `insects_results.parquet`, `insects_per_episode.parquet`, `delta_e.parquet`, `flooding_decomposition.parquet` in `results/R5_real_world_evaluation/data/`.
 - **Manuscript mapping:** Table II (`tab:real_data_summary`) and the flooding analysis of Section IV-C (genuine detection vs false-alarm flooding) are derived directly from these artifacts.
+
+## 5. Artifact Scope & Configuration Notes
+
+**Pipelines covered by this repository:** Figure 1 (R1), Figures 2A–2C (R2), Figure 3 (R3), Table I and the KSWIN $\alpha$-sweep (R4), Table II and the flooding decomposition (R5).
+
+**Manuscript results NOT regenerated here** (produced by exploratory instrumentation and reported in the paper for transparency): the single-tree HAT instrumentation ($M=1$) and the Hydra amplification factors ($4.1\times$–$8.0\times$, $K_{\mathrm{HAT}}\approx 102$); the clock-mismatch configuration matrix; the $\lambda_{\mathrm{op}}$ sweep illustrating the Decoupling Principle; the worked $M_{\mathrm{crit}}$ example.
+
+**ARF detector configuration (intentional heterogeneity):** in R1, R2 and R5 the ARF pins both its internal `drift_detector` and `warning_detector` to `ADWIN(clock=c_int)`. In R3 and R4 only the `drift_detector` is pinned; the `warning_detector` keeps river's default (`ADWIN(clock=32)`). This matches exactly how the submitted manuscript artifacts were generated. Throughout the paper, $c_{\mathrm{int}}$ refers to the clock of the **drift** detector.
