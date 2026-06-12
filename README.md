@@ -102,6 +102,10 @@ chmod +x run_experiment_R1.sh
 - **Data:** `results/R1_race_condition/data/R1_race_condition.parquet`
 - **Figure:** `results/R1_race_condition/figures/Fig_R1_race_condition.png` (Directly corresponds to **Figure 1** in the manuscript).
 
+> 💡 **Reviewer Transparency Note regarding Figure 1 (Jitter Effect):**
+> The generated figure perfectly reproduces the exact $\tau_{ARF}$ and $\tau_{det}$ stopping times reported in the submitted paper (green and red markers match bit-wise). However, you may notice a slight visual difference in the exact placement of the gray crosses ("Starved" / Censored runs at the far right) compared to the submitted PDF. 
+> This is expected and strictly visual. In the original research script, these censored crosses were scattered using an unseeded random jitter to prevent overplotting. To comply with rigorous Artifact Evaluation standards, this repository explicitly seeds the jitter generator (`rng_jitter = np.random.default_rng(42)`) to guarantee a deterministic, bit-wise identical output PNG across all future runs. The underlying mathematical count of starved runs remains perfectly identical.
+
 ### Experiment R2: Instrumented Asymptotic Complexity & The Blind Spot (Figures 2A, 2B, 2C)
 This experiment directly instruments the ARF's internal drift tracking versus the external CUSUM (PHT) across a continuous sweep of drift magnitudes ($\Delta e$). It isolates the Starvation Effect under high CUSUM thresholds ($\lambda=50$) and exposes the paradoxical failure increase at intermediate thresholds ($\lambda=25$).
 
