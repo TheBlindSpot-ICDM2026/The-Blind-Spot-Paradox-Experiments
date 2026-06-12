@@ -108,16 +108,16 @@ def plot_tau_scatter(df_diag):
 
     plt.subplots_adjust(bottom=0.15, top=0.85, left=0.08, right=0.98)
     # Bbox_inches='tight' secures the inclusion of the extracted legend
-    plt.savefig(FIG_DIR / "Fig_R1_v3_tau_arf_distribution.png", bbox_inches='tight')
+    plt.savefig(FIG_DIR / "Fig_R1_race_condition.png", bbox_inches='tight')
     plt.close()
 
 def main():
-    data_path = RESULTS_DIR / "R1_v7_protocol_diff.parquet"
+    data_path = RESULTS_DIR / "R1_race_condition.parquet"
     try:
         df_diag = pd.read_parquet(data_path)
         print(f"[INFO] Successfully loaded data from {data_path}. Generating plot...")
         plot_tau_scatter(df_diag)
-        print(f"[SUCCESS] Figure R1 saved to {FIG_DIR / 'Fig_R1_v3_tau_arf_distribution.png'}")
+        print(f"[SUCCESS] Figure R1 saved to {FIG_DIR / 'Fig_R1_race_condition.png'}")
     except FileNotFoundError:
         print(f"[ERROR] Data file not found at {data_path}. Please run the diagnostic script first.")
         raise

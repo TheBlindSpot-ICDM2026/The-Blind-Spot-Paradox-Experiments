@@ -17,7 +17,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 RESULTS_DIR = ROOT_DIR / "results" / "R1_race_condition" / "data"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-N_STEPS = 54000  # Warmup 4000 + Tolerance 50000 (harmonized with compute_add_v7)
+N_STEPS = 54000  # Warmup 4000 + Tolerance 50000 (harmonized)
 T_DRIFT = 4000
 N_SEEDS = 200
 DELTA_E = 0.25
@@ -33,20 +33,20 @@ class StrictCUSUM:
         if self.S >= self.threshold: self.drift_detected = True
 
 def run_diff_test(seed, lambda_val):
-    # [IEEE/ICDM FAIR Compliance] Worker-Level Global Locking & C-Level Overflow Prevention
-    # 1. Prevent Cython/C integer overflow for legacy components (max 32-bit signed int)
-    safe_seed = int(seed) % (2**31 - 1)
+    # [IEEE/ICDM FAIR Compliance] Worker-Level Global Locking (Controlled Rollback)
+    # We use the exact original uint32 seed to guarantee bit-wise match with the submitted paper.
+    # Python 3.12 and Numpy 1.26 natively handle uint32, avoiding C-level overflow.
     
-    # 2. Lock global singletons inside the parallel worker
-    random.seed(safe_seed)
-    np.random.seed(safe_seed)
+    # 1. Lock global singletons inside the parallel worker to prevent stochastic drift
+    random.seed(seed)
+    np.random.seed(seed)
     
-    # 3. Initialize modern local RNG
-    rng = np.random.default_rng(safe_seed)
+    # 2. Restore the EXACT original generators
+    rng = np.random.default_rng(seed)
     
     b_shift = np.sqrt(2) * norm.ppf(0.5 + DELTA_E)
     
-    arf = forest.ARFClassifier(n_models=10, seed=safe_seed, drift_detector=drift.ADWIN(clock=1), warning_detector=drift.ADWIN(clock=1))
+    arf = forest.ARFClassifier(n_models=10, seed=seed, drift_detector=drift.ADWIN(clock=1), warning_detector=drift.ADWIN(clock=1))
     cusum_external_fixed = StrictCUSUM(0.05, DELTA_P, lambda_val)
     
     errors_warmup = []
@@ -116,14 +116,14 @@ def run_diff_test(seed, lambda_val):
     }
 
 if __name__ == "__main__":
-    print("[INFO] Launching Extended Diagnostic 3 (Share Blind Spot Cartography v7)...")
+    print("[INFO] Launching Extended Diagnostic 3 (Share Blind Spot Cartography)...")
     seq = np.random.SeedSequence(42)
     seeds = [int(s.generate_state(1)[0]) for s in seq.spawn(N_SEEDS)]
     
     grid = [(s, l) for s in seeds for l in LAMBDAS_TO_TEST]
     results = Parallel(n_jobs=-1)(delayed(run_diff_test)(s, l) for s, l in grid)
     df = pd.DataFrame(results)
-    output_parquet = RESULTS_DIR / "R1_v7_protocol_diff.parquet"
+    output_parquet = RESULTS_DIR / "R1_race_condition.parquet"
     df.to_parquet(output_parquet, index=False)
     print(f"[INFO] Parquet artifact saved to: {output_parquet}")
     
@@ -132,8 +132,9 @@ if __name__ == "__main__":
         Detection_Rate=('tau_det_emp_finite', 'mean')
     ).round(3)
     
-    with open(RESULTS_DIR / "R1_v7_diagnostic_protocol_diff.md", "w") as f:
-        f.write("# Diagnostic 3 (v7): Share Blind Spot Evolution\n\n")
+    output_md = RESULTS_DIR / "R1_race_condition_diagnostic.md"
+    with open(output_md, "w") as f:
+        f.write("# Experiment R1: Share Blind Spot Evolution\n\n")
         f.write(agg.to_markdown())
         
-    print(f"[SUCCESS] Diagnostic 3 saved to: {RESULTS_DIR / 'R1_v7_protocol_diff.parquet'}")
+    print(f"[SUCCESS] Diagnostic saved to: {output_parquet}")

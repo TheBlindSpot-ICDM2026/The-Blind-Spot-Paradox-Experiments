@@ -2,8 +2,8 @@
 # ==============================================================================
 # Script: run_experiment_R1.sh
 # Objective: Reproduce Figure 1 (Race Condition & Starvation) for ICDM 2026.
-# Outputs:   - Data: results/R1_race_condition/data/*.parquet
-#            - Figure: results/R1_race_condition/figures/Fig_R1_v3_tau_arf_distribution.png
+# Outputs:   - Data: results/R1_race_condition/data/R1_race_condition.parquet
+#            - Figure: results/R1_race_condition/figures/Fig_R1_race_condition.png
 # Execution: ./run_experiment_R1.sh
 # Determinism: PYTHONHASHSEED is pinned for bit-wise reproducibility.
 # ==============================================================================

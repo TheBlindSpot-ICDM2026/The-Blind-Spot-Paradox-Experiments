@@ -99,8 +99,8 @@ chmod +x run_experiment_R1.sh
 ```
 
 **Expected Artifacts:**
-- **Data:** `results/R1_race_condition/data/R1_v7_protocol_diff.parquet`
-- **Figure:** `results/R1_race_condition/figures/Fig_R1_v3_tau_arf_distribution.png` (Directly corresponds to **Figure 1** in the manuscript).
+- **Data:** `results/R1_race_condition/data/R1_race_condition.parquet`
+- **Figure:** `results/R1_race_condition/figures/Fig_R1_race_condition.png` (Directly corresponds to **Figure 1** in the manuscript).
 
 ### Experiment R2: Instrumented Asymptotic Complexity & The Blind Spot (Figures 2A, 2B, 2C)
 This experiment directly instruments the ARF's internal drift tracking versus the external CUSUM (PHT) across a continuous sweep of drift magnitudes ($\Delta e$). It isolates the Starvation Effect under high CUSUM thresholds ($\lambda=50$) and exposes the paradoxical failure increase at intermediate thresholds ($\lambda=25$).
