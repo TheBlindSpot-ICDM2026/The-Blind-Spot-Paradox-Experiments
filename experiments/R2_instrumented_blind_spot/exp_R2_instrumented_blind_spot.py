@@ -34,11 +34,9 @@ FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 N_STEPS, T_DRIFT, N_MODELS = 8000, 4000, 10
 BOUNDARY_SHIFTS = np.linspace(0.1, 4.0, 20)
 
-# IEEE/ICDM FAIR Determinism: Cryptographically safe non-overlapping seed pools
-_master_seq = np.random.SeedSequence(42)
-# Generate 100 independent state streams for the 100 parallel runs
-_child_states = _master_seq.spawn(100)
-SEEDS = [int(state.generate_state(1)[0]) for state in _child_states]
+# IEEE/ICDM FAIR Determinism: Controlled Rollback to original seed space
+# Restoring the naive sequence to match the submitted PDF's exact fitted coefficients (e.g., 18.5)
+SEEDS = list(range(1, 101))
 
 P_PRE = 0.50 # Under H0 (x0+x1>0), the binary prediction has maximum variance (Bernoulli 0.5)
 

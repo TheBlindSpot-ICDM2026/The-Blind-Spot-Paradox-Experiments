@@ -14,3 +14,6 @@ joblib==1.4.2
 
 # Parquet engine for pandas.to_parquet() and read_parquet()
 pyarrow==21.0.0
+
+# Progress Tracking / Utilities
+tqdm==4.67.1
