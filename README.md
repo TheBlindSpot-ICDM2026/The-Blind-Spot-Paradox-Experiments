@@ -47,7 +47,9 @@ gunzip data/baf/*.gz
 │       ├── gradual_balanced.csv
 │       └── incremental_reoccurring_balanced.csv
 ├── experiments/
-│   ├── R1_race_condition/
+│   └── R1_race_condition/
+│       ├── exp_R1_generate_data.py
+│       └── exp_R1_plot_figure.py
 │   ├── R2_instrumented_blind_spot/
 │   │   └── exp_R2_instrumented_blind_spot.py
 │   ├── R3_regime_crossover/
@@ -66,6 +68,8 @@ gunzip data/baf/*.gz
 │       └── exp_R5_smoke_test.py
 ├── results/
 │   ├── R1_race_condition/
+│   │   ├── data/                            
+│   │   └── figures/
 │   ├── R2_instrumented_blind_spot/
 │   │   ├── data/                            
 │   │   └── figures/
@@ -100,6 +104,7 @@ chmod +x run_experiment_R1.sh
 
 **Expected Artifacts:**
 - **Data:** `results/R1_race_condition/data/R1_race_condition.parquet`
+- **Diagnostic:** `results/R1_race_condition/data/R1_race_condition_diagnostic.md` (Tabular summary of the Blind Spot evolution).
 - **Figure:** `results/R1_race_condition/figures/Fig_R1_race_condition.png` (Directly corresponds to **Figure 1** in the manuscript).
 
 > 💡 **Reviewer Transparency Note regarding Figure 1 (Jitter Effect):**

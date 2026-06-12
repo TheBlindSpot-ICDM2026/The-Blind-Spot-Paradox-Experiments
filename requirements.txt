@@ -17,3 +17,6 @@ pyarrow==21.0.0
 
 # Progress Tracking / Utilities
 tqdm==4.67.1
+
+# Text formatting (Strictly required for pandas.DataFrame.to_markdown)
+tabulate==0.10.0
