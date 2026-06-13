@@ -111,8 +111,8 @@ def plot_scenario(df, cfg):
         'missed_rate': np.mean(g['tau_arf'].fillna(np.inf) < g['tau_det'].fillna(np.inf))
     }), include_groups=False).reset_index()
 
-    agg['delta_e_theorique'] = norm.cdf(agg['boundary_shift'] / np.sqrt(2)) - 0.5
-    delta_e_vals = agg['delta_e_theorique'].values
+    agg['delta_e_theoretical'] = norm.cdf(agg['boundary_shift'] / np.sqrt(2)) - 0.5
+    delta_e_vals = agg['delta_e_theoretical'].values
 
     fig, (ax_main, ax_blind) = plt.subplots(2, 1, figsize=(8, 7), gridspec_kw={'height_ratios':[3, 1]}, sharex=True)
 

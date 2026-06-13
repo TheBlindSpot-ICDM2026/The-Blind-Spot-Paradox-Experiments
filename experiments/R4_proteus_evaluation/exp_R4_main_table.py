@@ -309,7 +309,7 @@ def cell_pair(agg, detector, clock, regime_raw, is_kswin, force_bold_f1=False):
         raw = int(round(r.ADD_mean.values[0]))
         add = f"{raw} [{max(0, raw - KSWIN_LAG)}]"   # ADD_corr = max(0, ADD_raw - W/2)
     else:
-        add = format_cell(r.ADD_mean.values[0], r.ADD_ci.values[0], is_f1=False, force_bold=force_bold_f1)
+        add = format_cell(r.ADD_mean.values[0], r.ADD_ci.values[0], is_f1=False)
     return [f1, add]
 
 def fmt_p(p):
@@ -353,11 +353,14 @@ def build_table(agg, sign_df):
             L.append(r"    \midrule"); continue
         label, det, clk, ks = spec
         
-        # Bolding strictly aligned with the submitted Table I: only the two
-        # blind-spot collapse rows (PHT/EDDM + ARF, c_int = 1) are bolded.
+        # IEEE/ICDM standard: bolding aligned with the submitted Table I caption
+        # (blind-spot collapse F1=0.00 AND its KSWIN resolution F1=1.00; ADD never bolded)
         force_bold = label in [
             r"\textbf{PHT + ARF ($c_{\mathrm{int}} = 1$)}",
-            r"\textbf{EDDM + ARF ($c_{\mathrm{int}} = 1$)}"
+            r"\textbf{EDDM + ARF ($c_{\mathrm{int}} = 1$)}",
+            r"\textbf{SRP + PHT ($c_{\mathrm{int}} = 1$)}",
+            r"\textbf{KSWIN + ARF ($c_{\mathrm{int}} = 1$)}",
+            r"\textbf{KSWIN + ARF ($c_{\mathrm{int}} = 32$)}"
         ]
         
         cells = []

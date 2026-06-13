@@ -19,7 +19,7 @@ To comply with anonymous repository size limits, some large datasets are provide
 
 **Execute the following command from the repository root:**
 ```bash
-gunzip data/baf/*.gz
+gunzip -k data/baf/*.gz
 ```
 
 ### Data Sources
@@ -167,7 +167,7 @@ chmod +x run_experiment_R5.sh
 The orchestrator pins `PYTHONHASHSEED=0`, and every cell pins its `random`/`numpy`/`river` seed through `numpy.random.SeedSequence(42)`, guaranteeing bit-wise reproducibility. The BAF stage is checkpointed and long-running (~4.5 h on the reference server); the INSECTS stage completes in minutes.
 
 **Expected Artifacts:**
-- **Table Body:** `results/R5_real_world_evaluation/tables/table2_real_data_summary.tex` (the `tabular` body of **Table II**; the enclosing `table*` environment and caption are maintained in the manuscript).
+- **Table:** `results/R5_real_world_evaluation/tables/table2_real_data_summary.tex` (a complete, standalone `table*` environment for **Table II** with an auto-generated caption; this is a reference render parallel to the hand-maintained Table II in the manuscript — keep the two in sync rather than `\input`-ing this file alongside the manuscript copy).
 - **Table Values:** `results/R5_real_world_evaluation/tables/table2_values.csv` (raw values, paired difference, and seed-level sign test).
 - **Per-run metrics:** `baf_results.parquet`, `insects_results.parquet`, `insects_per_episode.parquet`, `delta_e.parquet`, `flooding_decomposition.parquet` in `results/R5_real_world_evaluation/data/`.
 - **Manuscript mapping:** Table II (`tab:real_data_summary`) and the flooding analysis of Section IV-C (genuine detection vs false-alarm flooding) are derived directly from these artifacts.

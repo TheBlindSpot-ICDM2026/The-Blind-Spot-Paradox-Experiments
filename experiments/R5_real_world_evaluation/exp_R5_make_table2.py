@@ -2,8 +2,10 @@
 """Assemble Table II (real-world validation) from the pipeline artifacts. Outputs:
   - flooding_decomposition.parquet  (genuine detection vs false-alarm flooding),
   - table2_values.csv               (raw values + paired difference + sign test),
-  - table2_real_data_summary.tex    (the tabular BODY only; the caption and the
-    \\begin{table*} wrapper stay in the manuscript, per arbitrage G2).
+  - table2_real_data_summary.tex    (the COMPLETE \\begin{table*} environment,
+    caption auto-generated from the flooding artifact; a standalone reference
+    render parallel to the hand-maintained Table II in the manuscript -- keep the
+    two in sync, do NOT \\input alongside the manuscript copy or it doubles).
 Significance is the seed-level paired sign test (unit of independence = seed)."""
 import sys
 import numpy as np
@@ -170,7 +172,7 @@ def main():
     print(pd.DataFrame(rows_csv).to_string(index=False))
     print("\n=== Flooding decomposition: gradual_balanced (the clean proof) ===")
     print(flood[flood.variant == "gradual_balanced"].to_string(index=False))
-    print(f"\n[SUCCESS] tabular body -> {cfg.OUT_TABLE2_TEX}")
+    print(f"\n[SUCCESS] full table*  -> {cfg.OUT_TABLE2_TEX}")
     print(f"[SUCCESS] raw values   -> {cfg.OUT_TABLE2_CSV}")
     print(f"[SUCCESS] flooding      -> {cfg.OUT_FLOODING}")
 
