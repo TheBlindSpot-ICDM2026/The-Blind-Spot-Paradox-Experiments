@@ -13,6 +13,8 @@ source blindspot_env/bin/activate  # On Windows use `blindspot_env\Scripts\activ
 pip install -r requirements.txt
 ```
 
+> **⚠️ OS Compatibility Note:** The execution pipeline relies on shell scripts (`.sh`) and POSIX utilities (`gunzip`). Windows users **must** execute this pipeline from a Bash-compatible environment (e.g., Windows Subsystem for Linux - WSL, or Git Bash).
+
 ## 2. Datasets & Data Preparation
 
 To comply with anonymous repository size limits, some large datasets are provided in a compressed format. Before running the real-world evaluations, please decompress the Bank Account Fraud (BAF) dataset.
@@ -32,11 +34,17 @@ gunzip -k data/baf/*.gz
 .
 ├── requirements.txt
 ├── README.md
+├── run_all.sh
+├── run_tests.sh
 ├── run_experiment_R1.sh                     
 ├── run_experiment_R2.sh                     
 ├── run_experiment_R3.sh
 ├── run_experiment_R4.sh
 ├── run_experiment_R5.sh
+├── run_experiment_R6.sh
+├── run_experiment_R7.sh
+├── run_experiment_R8.sh
+├── run_experiment_R9.sh
 ├── data/
 │   ├── baf/
 │   │   ├── Base.csv.gz
@@ -66,6 +74,22 @@ gunzip -k data/baf/*.gz
 │       ├── exp_R5_make_table2.py
 │       ├── exp_R5_preflight.py
 │       └── exp_R5_smoke_test.py
+│   └── R6_hydra_factor/
+│       ├── exp_R6_generate_data.py
+│       └── exp_R6_compute_hydra.py
+│   ├── R7_clock_mismatch/
+│   │   ├── exp_R7_generate_data.py
+│   │   └── exp_R7_compute_regime1.py
+│   ├── R8_lambda_op_sweep/
+│   │   └── exp_R8_lambda_op_sweep.py
+│   └── R9_mcrit/
+│       ├── exp_R9_generate_data.py
+│       └── exp_R9_compute_mcrit.py
+├── tests/
+│   ├── test_R6_hydra.py
+│   ├── test_R7_regime1.py
+│   ├── test_R8_lambda_op.py
+│   └── test_R9_mcrit.py
 ├── results/
 │   ├── R1_race_condition/
 │   │   ├── data/                            
@@ -79,18 +103,45 @@ gunzip -k data/baf/*.gz
 │   ├── R4_proteus_evaluation/
 │   │   ├── data/                            
 │   │   └── tables/
-│   └── R5_real_world_evaluation/
+│   ├── R5_real_world_evaluation/
+│   │   ├── data/                            
+│   │   └── tables/                        
+│   ├── R6_hydra_factor/
+│   │   ├── data/                            
+│   │   └── tables/                        
+│   ├── R7_clock_mismatch/
+│   │   ├── data/                            
+│   │   └── tables/                        
+│   ├── R8_lambda_op_sweep/
+│   │   └── data/                            
+│   └── R9_mcrit/
 │       ├── data/                            
-│       └── tables/                        
+│       └── figures/                        
 └── logs/
+    ├── pytest/
     ├── R1_race_condition/
     ├── R2_instrumented_blind_spot/
     ├── R3_regime_crossover/
     ├── R4_proteus_evaluation/
-    └── R5_real_world_evaluation/
+    ├── R5_real_world_evaluation/
+    ├── R6_hydra_factor/
+    ├── R7_clock_mismatch/
+    ├── R8_lambda_op_sweep/
+    └── R9_mcrit/
 ```
 
 ## 4. Reproducing the Experiments
+
+### One-Click Reproduction (Recommended for Artifact Evaluation)
+To execute the entire pipeline (Experiments R1 through R9) and run the mathematical validation suite against the manuscript claims, simply execute the master orchestrator from the repository root:
+
+```bash
+chmod +x *.sh
+./run_all.sh
+```
+This will sequentially generate all data artifacts, figures, and tables, followed by a `pytest` execution verifying the exactness of the reproduced claims. Test outputs are automatically saved to `logs/pytest/`.
+
+---
 
 ### Experiment R1: The Race Condition (Figure 1)
 This experiment demonstrates the "Blind Spot" paradox by simulating the race condition between the internal Adaptive Random Forest (ARF) stopping time ($\tau_{ARF}$) and the external drift detector stopping time ($\tau_{det}$).
@@ -150,7 +201,7 @@ chmod +x run_experiment_R4.sh
 ```
 
 **Expected Artifacts:**
-- **Main Table:** `results/R4_proteus_evaluation/tables/exp_R4_table_I_III_merged.tex` (Directly corresponds to **Table I**).
+- **Main Table:** `results/R4_proteus_evaluation/tables/table1_proteus_summary.tex` (Directly corresponds to **Table I**).
 - **KSWIN Sweep Table:** `results/R4_proteus_evaluation/tables/exp_R4_table_KSWIN_alpha_sweep.tex`
 - **Significance Tests:** `exp_R4_seed_level_tests.csv` and `exp_R4_seed_level_tests_KSWIN_alpha_sweep.csv` in `results/R4_proteus_evaluation/data/`.
 
@@ -172,10 +223,66 @@ The orchestrator pins `PYTHONHASHSEED=0`, and every cell pins its `random`/`nump
 - **Per-run metrics:** `baf_results.parquet`, `insects_results.parquet`, `insects_per_episode.parquet`, `delta_e.parquet`, `flooding_decomposition.parquet` in `results/R5_real_world_evaluation/data/`.
 - **Manuscript mapping:** Table II (`tab:real_data_summary`) and the flooding analysis of Section IV-C (genuine detection vs false-alarm flooding) are derived directly from these artifacts.
 
+### Experiment R6: The Hydra Effect (Ensemble Acceleration)
+This experiment isolates the adaptation delay of a single Hoeffding Adaptive Tree ($M=1$) against the full Adaptive Random Forest ($M=10$). It computes the empirical Hydra acceleration factor ($4.1\times$--$8.0\times$) and verifies the structural power-law constants ($K_{\mathrm{HAT}} \approx 102$) discussed in **Section III-C (The Hydra Effect: Ensemble Acceleration)**.
+
+> ⚠️ **CRITICAL DEPENDENCY:** 
+> Experiment R6 compares its single-tree instrumentation against the ensemble adaptation times generated in Experiment R2. You **MUST** execute `run_experiment_R2.sh` before running R6. Failure to do so will result in a `FileNotFoundError` when parsing the ARF baseline.
+
+To reproduce the instrumentation and extract the empirical power-law parameters:
+
+```bash
+chmod +x run_experiment_R6.sh
+./run_experiment_R6.sh
+```
+
+**Expected Artifacts:**
+- **Data:** `results/R6_hydra_factor/data/R6_hat_instrumented.parquet`
+- **Snippet:** `results/R6_hydra_factor/tables/exp_R6_hydra_empirical_validation.tex` (the empirical Hydra factors and power-law fits reported in the paper).
+
+### Experiment R7: The Clock-Mismatch Artefact (Regime 1)
+Instruments the real ARF ($M=10$) internal drift ADWIN against an external ADWIN on the ensemble error stream, across three clock configurations (mismatched, matched, decoupled), and reports the blind-spot miss rate as a function of drift magnitude. It is the data behind the "Regime 1: The Clock-Mismatch Artefact" subsection.
+
+```bash
+chmod +x run_experiment_R7.sh
+./run_experiment_R7.sh
+```
+
+**Expected Artifacts:**
+- **Data:** `results/R7_clock_mismatch/data/R7_clock_mismatch.parquet`
+- **Summary:** `results/R7_clock_mismatch/tables/exp_R7_regime1_miss_summary.tex` and `exp_R7_regime1_miss_curve.csv` (miss rate per clock configuration and drift-magnitude band).
+
+> **Reproducibility:** `tests/test_R7_regime1.py` re-derives the artifact and asserts the three qualitative claims of the Regime-1 subsection (mismatched miss $>50\%$ at high magnitude; matched and decoupled miss $<5\%$ above the weak-signal band).
+
+### Experiment R8: The Decoupling Principle ($\lambda_{\mathrm{op}}$ sweep)
+Consolidates the worst-case $\lambda_{\mathrm{op}}$ bound for the Decoupling Principle (Definition 11). Measures strictly the internal adaptation time $\tau_{\mathrm{ARF}}$ of the ARF ($c_{\mathrm{int}}=1, M=10$) over a fine grid of magnitudes to locate the global minimum of the limit capacity.
+
+```bash
+chmod +x run_experiment_R8.sh
+./run_experiment_R8.sh
+```
+
+**Expected Artifacts:**
+- **Data:** `results/R8_lambda_op_sweep/data/exp_R8_lambda_op_sweep.csv`
+
+> **Reproducibility:** `tests/test_R8_lambda_op.py` re-derives the artifact and asserts the three numerical claims of Definition 11.
+
+### Experiment R9: The Critical Ensemble Size ($M_{\mathrm{crit}}$)
+Records, per drift magnitude and seed, the internal adaptation delay $\tau_{\mathrm{HAT}}$ of a single Hoeffding Adaptive Tree. The empirical CDF of $\tau_{\mathrm{HAT}}$ is consumed to derive the distribution-free critical ensemble size $M_{\mathrm{crit}}$. The comparison table reports $M_{\mathrm{crit}}$ at $\beta \in \{0.50, 0.05\}$; the manuscript's worked example and the "$M_{\mathrm{crit}} \le 3$" claim use $\beta = 0.50$ (the $\beta = 0.05$ column is a conservative complement and is expectedly larger). The operational quantity $P_{\mathrm{miss}}(M{=}10)$ is $\beta$-independent.
+
+```bash
+chmod +x run_experiment_R9.sh
+./run_experiment_R9.sh
+```
+
+**Expected Artifacts:**
+- **Data:** `results/R9_mcrit/data/exp_R9_mcrit_comparison.csv`
+- **Figure:** `results/R9_mcrit/figures/Fig_R9_Mcrit_empirical_vs_exp.png`
+
+> **Reproducibility:** `tests/test_R9_mcrit.py` asserts that the regenerated artifact reproduces the exact numerical example of the manuscript Corollary ($M_{\mathrm{crit}}=1$).
+
 ## 5. Artifact Scope & Configuration Notes
 
-**Pipelines covered by this repository:** Figure 1 (R1), Figures 2A–2C (R2), Figure 3 (R3), Table I and the KSWIN $\alpha$-sweep (R4), Table II and the flooding decomposition (R5).
-
-**Manuscript results NOT regenerated here** (produced by exploratory instrumentation and reported in the paper for transparency): the single-tree HAT instrumentation ($M=1$) and the Hydra amplification factors ($4.1\times$–$8.0\times$, $K_{\mathrm{HAT}}\approx 102$); the clock-mismatch configuration matrix; the $\lambda_{\mathrm{op}}$ sweep illustrating the Decoupling Principle; the worked $M_{\mathrm{crit}}$ example.
+**Pipelines covered by this repository:** Figure 1 (R1), Figures 2A–2C (R2), Figure 3 (R3), Table I and the KSWIN $\alpha$-sweep (R4), Table II and the flooding decomposition (R5), the Hydra Effect acceleration bounds (R6), the clock-mismatch / Regime-1 matrix (R7), the Decoupling Principle bound (R8), and the Critical Ensemble Size example (R9).
 
 **ARF detector configuration (intentional heterogeneity):** in R1, R2 and R5 the ARF pins both its internal `drift_detector` and `warning_detector` to `ADWIN(clock=c_int)`. In R3 and R4 only the `drift_detector` is pinned; the `warning_detector` keeps river's default (`ADWIN(clock=32)`). This matches exactly how the submitted manuscript artifacts were generated. Throughout the paper, $c_{\mathrm{int}}$ refers to the clock of the **drift** detector.

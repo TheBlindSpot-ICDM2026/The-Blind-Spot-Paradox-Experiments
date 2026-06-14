@@ -20,3 +20,6 @@ tqdm==4.67.1
 
 # Text formatting (Strictly required for pandas.DataFrame.to_markdown)
 tabulate==0.10.0
+
+# Testing & Reproducibility Validation
+pytest==9.0.3

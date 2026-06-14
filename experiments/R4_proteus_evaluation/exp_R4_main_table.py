@@ -39,7 +39,7 @@ for d in [RESULTS_DIR, TABLES_DIR, LOGS_DIR]:
     d.mkdir(parents=True, exist_ok=True)
 
 RAW_CSV   = RESULTS_DIR / "exp_R4_results_aligned_fusion.csv"
-OUT_TEX   = TABLES_DIR / "exp_R4_table_I_III_merged.tex"
+OUT_TEX   = TABLES_DIR / "table1_proteus_summary.tex"
 SIGN_CSV  = RESULTS_DIR / "exp_R4_seed_level_tests.csv"
 
 N_SEEDS        = 30
