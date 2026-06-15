@@ -6,6 +6,7 @@ import sys
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
+from tqdm import tqdm
 
 import exp_R5_config as cfg
 import exp_R5_common as common
@@ -58,8 +59,8 @@ def main():
 
     for idx, chunk in todo:
         print(f"[R5/BAF] chunk {idx + 1}/{len(chunks)}", flush=True)
-        res = Parallel(n_jobs=cfg.N_JOBS, batch_size=2, verbose=10)(
-            delayed(simulate)(*args) for args in chunk)
+        res = Parallel(n_jobs=cfg.N_JOBS, batch_size=2)(
+            delayed(simulate)(*args) for args in tqdm(chunk, desc=f"BAF Chunk {idx + 1}/{len(chunks)}"))
         all_results.extend(res)
         pd.DataFrame(res).to_parquet(
             cfg.CHECKPOINTS_DIR / f"baf_partial_{idx}.parquet", index=False)

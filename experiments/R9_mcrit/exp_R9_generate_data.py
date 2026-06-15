@@ -12,6 +12,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
+from tqdm import tqdm
 from pathlib import Path
 from river import drift
 from river.forest import ARFClassifier
@@ -83,7 +84,7 @@ def run_instrumented_hat(boundary_shift, seed):
 
 if __name__ == "__main__":
     grid = [(bs, s) for bs in BOUNDARY_SHIFTS for s in SEEDS]
-    rows = Parallel(n_jobs=-1)(delayed(run_instrumented_hat)(bs, s) for bs, s in grid)
+    rows = Parallel(n_jobs=-1)(delayed(run_instrumented_hat)(bs, s) for bs, s in tqdm(grid, desc="Experiment R9"))
     out = DATA_DIR / "results_instrumented_A_ADWIN_HAT.csv"
     pd.DataFrame(rows).to_csv(out, index=False)
     print(f"[INFO] single-tree HAT instrumentation saved to: {out}")

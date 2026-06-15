@@ -14,6 +14,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
+from tqdm import tqdm
 from pathlib import Path
 from scipy.stats import norm
 from river import drift
@@ -78,7 +79,7 @@ if __name__ == "__main__":
     all_rows = []
     for cfg in SCENARIOS:
         grid = [(bs, s) for bs in BOUNDARY_SHIFTS for s in SEEDS]
-        all_rows.extend(Parallel(n_jobs=-1)(delayed(run_clock_mismatch)(bs, s, cfg) for bs, s in grid))
+        all_rows.extend(Parallel(n_jobs=-1)(delayed(run_clock_mismatch)(bs, s, cfg) for bs, s in tqdm(grid, desc=cfg['id'])))
     df = pd.DataFrame(all_rows)
     # Theoretical Delta_e for the axis (avoids the empirical measurement artefact, as in the legacy script).
     df['delta_e'] = norm.cdf(df['boundary_shift'] / np.sqrt(2)) - 0.5

@@ -9,6 +9,7 @@ import sys
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
+from tqdm import tqdm
 from river import stream
 
 import exp_R5_config as cfg
@@ -87,8 +88,8 @@ def main():
     aggs, episodes = [], []
     for idx, chunk in enumerate(chunks):
         print(f"[R5/INSECTS] chunk {idx + 1}/{len(chunks)}", flush=True)
-        res = Parallel(n_jobs=cfg.N_JOBS, batch_size=2, verbose=10)(
-            delayed(simulate)(*args) for args in chunk)
+        res = Parallel(n_jobs=cfg.N_JOBS, batch_size=2)(
+            delayed(simulate)(*args) for args in tqdm(chunk, desc=f"INSECTS Chunk {idx + 1}/{len(chunks)}"))
         for a, eps in res:
             aggs.append(a)
             episodes.extend(eps)

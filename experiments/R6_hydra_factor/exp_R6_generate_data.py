@@ -11,6 +11,7 @@ import random
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
+from tqdm import tqdm
 from pathlib import Path
 from scipy.stats import norm
 from river import drift
@@ -60,7 +61,7 @@ def run_instrumented_hat(boundary_shift, seed):
 
 if __name__ == "__main__":
     grid = [(bs, s) for bs in BOUNDARY_SHIFTS for s in SEEDS]
-    results = Parallel(n_jobs=-1)(delayed(run_instrumented_hat)(bs, s) for bs, s in grid)
+    results = Parallel(n_jobs=-1)(delayed(run_instrumented_hat)(bs, s) for bs, s in tqdm(grid, desc="Experiment R6"))
     df = pd.DataFrame(results)
     # Theoretical Delta_e mapping (same transform as R2)
     df['delta_e'] = norm.cdf(df['boundary_shift'] / np.sqrt(2)) - 0.5

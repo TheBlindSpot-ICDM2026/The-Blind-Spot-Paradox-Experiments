@@ -16,6 +16,7 @@ from scipy.special import expit, gammaln
 import random
 from scipy.stats import binomtest
 from joblib import Parallel, delayed
+from tqdm import tqdm
 
 from river import drift, tree, forest
 
@@ -238,7 +239,7 @@ def main():
     grid = list(itertools.product(TRANSITIONS, SEEDS))
     print(f"[run] {len(TRANSITIONS)} transitions x {N_SEEDS} seeds x 4 alphas x 3 regimes")
     print("[run] Parallel execution (Joblib) - Please wait...")
-    nested = Parallel(n_jobs=-1)(delayed(process_transition_seed)(t, s) for t, s in grid)
+    nested = Parallel(n_jobs=-1)(delayed(process_transition_seed)(t, s) for t, s in tqdm(grid, desc="R4 KSWIN Sweep"))
     df = pd.DataFrame([row for sub in nested for row in sub],
                       columns=['Calibration', 'Detector', 'Clock', 'Dataset', 'w', 'F1', 'ADD', 'Seed'])
     df.to_csv(RAW_CSV, index=False)

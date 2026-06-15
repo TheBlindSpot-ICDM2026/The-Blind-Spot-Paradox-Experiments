@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 from joblib import Parallel, delayed
+from tqdm import tqdm
 from scipy.stats import norm
 from river import drift, forest
 
@@ -85,8 +86,8 @@ def main():
 
     print(f"[INFO] {len(grid)} ARF runs (c_int={C_INT}, M={N_MODELS}) "
           f"| drift@t={T_DRIFT} tol={TOLERANCE}")
-    res = Parallel(n_jobs=-1, verbose=5)(
-        delayed(run_tau_arf)(s, de) for s, de in grid
+    res = Parallel(n_jobs=-1)(
+        delayed(run_tau_arf)(s, de) for s, de in tqdm(grid, desc="R8 Lambda Sweep")
     )
     df = pd.DataFrame(res)
     df.to_csv(RESULTS_DIR / "exp_R8_fine_grid_raw.csv", index=False)

@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 from pathlib import Path
+from tqdm import tqdm
 from scipy.stats import norm
 from river import forest, drift
 
@@ -121,7 +122,7 @@ if __name__ == "__main__":
     seeds = [int(s.generate_state(1)[0]) for s in seq.spawn(N_SEEDS)]
     
     grid = [(s, l) for s in seeds for l in LAMBDAS_TO_TEST]
-    results = Parallel(n_jobs=-1)(delayed(run_diff_test)(s, l) for s, l in grid)
+    results = Parallel(n_jobs=-1)(delayed(run_diff_test)(s, l) for s, l in tqdm(grid, desc="Experiment R1"))
     df = pd.DataFrame(results)
     output_parquet = RESULTS_DIR / "R1_race_condition.parquet"
     df.to_parquet(output_parquet, index=False)

@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 from joblib import Parallel, delayed
+from tqdm import tqdm
 import matplotlib
 matplotlib.use('Agg')  # Headless backend to ensure exact visual reproducibility
 import matplotlib.pyplot as plt
@@ -124,7 +125,7 @@ def main():
     # the feature streams from the manuscript's submission run.
     worker_seeds = list(range(N_SEEDS))
 
-    for de in DELTA_E_VALUES:
+    for de in tqdm(DELTA_E_VALUES, desc="Delta E Sweep"):
         for p in pipes:
             res = Parallel(n_jobs=-1)(delayed(run_single_seed)(worker_seeds[s], de, p) for s in range(N_SEEDS))
             miss_arr, fp_arr, acc_arr = zip(*res)
