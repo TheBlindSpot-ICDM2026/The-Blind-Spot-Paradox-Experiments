@@ -281,23 +281,23 @@ def analyze_pair(df, mA, mB, labelA, labelB):
 # ─── LaTeX Assembly (Layout identical to Table I in the manuscript) ───────────
 ROW_SPECS = [  # (label, Detector, Clock, is_kswin)
     (r"\textbf{PHT + HT}",                              'PHT + HT',            1, False),
-    (r"\textbf{PHT + ARF ($c_{\mathrm{int}} = 32$)}",   'PHT + ARF',           32, False),
-    (r"\textbf{PHT + ARF ($c_{\mathrm{int}} = 1$)}",    'PHT + ARF',           1, False),
+    (r"\textbf{PHT + ARF} ($c_{\mathrm{int}} = 32$)",   'PHT + ARF',           32, False),
+    (r"\textbf{PHT + ARF} ($c_{\mathrm{int}} = 1$)",    'PHT + ARF',           1, False),
     "MIDRULE",
     (r"\textbf{EDDM + HT}",                             'EDDM + HT',           1, False),
-    (r"\textbf{EDDM + ARF ($c_{\mathrm{int}} = 1$)}",   'EDDM + ARF',          1, False),
+    (r"\textbf{EDDM + ARF} ($c_{\mathrm{int}} = 1$)",   'EDDM + ARF',          1, False),
     "MIDRULE",
     (r"\textbf{ADWIN + HT}",                            'ADWIN + HT',          1, False),
-    (r"\textbf{ADWIN + ARF ($c_{\mathrm{int}} = 32$)}", 'ADWIN + ARF',         32, False),
-    (r"\textbf{ADWIN + ARF ($c_{\mathrm{int}} = 1$)}",  'ADWIN + ARF',         1, False),
+    (r"\textbf{ADWIN + ARF} ($c_{\mathrm{int}} = 32$)", 'ADWIN + ARF',         32, False),
+    (r"\textbf{ADWIN + ARF} ($c_{\mathrm{int}} = 1$)",  'ADWIN + ARF',         1, False),
     "MIDRULE",
-    (r"\textbf{SRP + PHT ($c_{\mathrm{int}} = 1$)}",    'SRP + PHT',           1, False),
-    (r"\textbf{SRP + PHT ($c_{\mathrm{int}} = 32$)}",   'SRP + PHT',           32, False),
-    (r"\textbf{KSWIN + ARF ($c_{\mathrm{int}} = 1$)}",  'KSWIN + ARF',         1, True),
-    (r"\textbf{KSWIN + ARF ($c_{\mathrm{int}} = 32$)}", 'KSWIN + ARF',         32, True),
+    (r"\textbf{SRP + PHT} ($c_{\mathrm{int}} = 1$)",    'SRP + PHT',           1, False),
+    (r"\textbf{SRP + PHT} ($c_{\mathrm{int}} = 32$)",   'SRP + PHT',           32, False),
+    (r"\textbf{KSWIN + ARF} ($c_{\mathrm{int}} = 1$)",  'KSWIN + ARF',         1, True),
+    (r"\textbf{KSWIN + ARF} ($c_{\mathrm{int}} = 32$)", 'KSWIN + ARF',         32, True),
     "MIDRULE",
-    (r"\textbf{PHT + RF (Static)}",                     'PHT + RF (Static)',   1, False),
-    (r"\textbf{ADWIN + RF (Static)}",                   'ADWIN + RF (Static)', 1, False),
+    (r"\textbf{PHT + RF} (Static)",                     'PHT + RF (Static)',   1, False),
+    (r"\textbf{ADWIN + RF} (Static)",                   'ADWIN + RF (Static)', 1, False),
 ]
 REG_DISPLAY = [('IID', 'IID Baseline'), ('Cal. A', 'Cal. A'), ('Cal. B', 'Cal. B')]
 
@@ -315,7 +315,7 @@ def cell_pair(agg, detector, clock, regime_raw, is_kswin, force_bold_f1=False):
 
 def fmt_p(p):
     if p <= 0: return "0"
-    e = int(np.floor(np.log10(p))); return rf"{p/10**e:.1f}\times10^{{{e}}}"
+    e = int(np.floor(np.log10(p))); return rf"{p/10**e:.0f}\times10^{{{e}}}"
 
 def build_caption(sign_df):
     # Explicit and safe pair extraction to guarantee exact ICDM caption ordering
@@ -340,7 +340,8 @@ def build_caption(sign_df):
             r"resamples); $\infty$ denotes detection failure. Significance is assessed at the seed level (the unit "
             rf"of statistical independence of the synthetic generator): {'; '.join(pairs)}. All {ns} seeds separate "
             rf"completely (paired sign test $p \approx {fmt_p(p0)}$); Wilcoxon is deprecated. "
-            r"KSWIN ADD includes a structural lag $W/2 = 15$; bracketed $[X]$ is lag-corrected.")
+            r"KSWIN ADD includes a structural lag $W/2 = 15$; bracketed $[X]$ is lag-corrected. "
+            r"Boldface marks the blind-spot collapse (F1=0.00) and its KSWIN resolution (F1=1.00).")
 
 def build_table(agg, sign_df):
     L = [r"\begin{table*}[t]", r"  \centering", rf"  \caption{{{build_caption(sign_df)}}}",
@@ -357,11 +358,11 @@ def build_table(agg, sign_df):
         # IEEE/ICDM standard: bolding aligned with the submitted Table I caption
         # (blind-spot collapse F1=0.00 AND its KSWIN resolution F1=1.00; ADD never bolded)
         force_bold = label in [
-            r"\textbf{PHT + ARF ($c_{\mathrm{int}} = 1$)}",
-            r"\textbf{EDDM + ARF ($c_{\mathrm{int}} = 1$)}",
-            r"\textbf{SRP + PHT ($c_{\mathrm{int}} = 1$)}",
-            r"\textbf{KSWIN + ARF ($c_{\mathrm{int}} = 1$)}",
-            r"\textbf{KSWIN + ARF ($c_{\mathrm{int}} = 32$)}"
+            r"\textbf{PHT + ARF} ($c_{\mathrm{int}} = 1$)",
+            r"\textbf{EDDM + ARF} ($c_{\mathrm{int}} = 1$)",
+            r"\textbf{SRP + PHT} ($c_{\mathrm{int}} = 1$)",
+            r"\textbf{KSWIN + ARF} ($c_{\mathrm{int}} = 1$)",
+            r"\textbf{KSWIN + ARF} ($c_{\mathrm{int}} = 32$)"
         ]
         
         cells = []

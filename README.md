@@ -223,6 +223,9 @@ The orchestrator pins `PYTHONHASHSEED=0`, and every cell pins its `random`/`nump
 - **Per-run metrics:** `baf_results.parquet`, `insects_results.parquet`, `insects_per_episode.parquet`, `delta_e.parquet`, `flooding_decomposition.parquet` in `results/R5_real_world_evaluation/data/`.
 - **Manuscript mapping:** Table II (`tab:real_data_summary`) and the flooding analysis of Section IV-C (genuine detection vs false-alarm flooding) are derived directly from these artifacts.
 
+> 💡 **Reviewer Transparency Note regarding Table II (Flooding Alarms Count):**
+> The generated LaTeX table reports **86 alarms** (precision $0.012$) for the `PHT+ARF(c=1)` pipeline on the `gradual_balanced` stream, whereas the submitted manuscript reports **93 alarms** (precision $0.011$). This is expected and is not a mathematical error. Prior to Artifact Evaluation, the distributed execution pool (`joblib.Parallel`) leaked the global Python/NumPy RNG state across workers, rendering the specific draw of 93 alarms irreproducible. To meet rigorous AE standards, this repository enforces strict, isolated per-cell RNG seeding (`exp_R5_common.py`). Under bit-wise determinism, the exact, reproducible count stabilizes at 86. The core scientific conclusion (massive false-alarm flooding compared to 7 alarms for the baseline) remains entirely identical.
+
 ### Experiment R6: The Hydra Effect (Ensemble Acceleration)
 This experiment isolates the adaptation delay of a single Hoeffding Adaptive Tree ($M=1$) against the full Adaptive Random Forest ($M=10$). It computes the empirical Hydra acceleration factor ($4.1\times$--$8.0\times$) and verifies the structural power-law constants ($K_{\mathrm{HAT}} \approx 102$) discussed in **Section III-C (The Hydra Effect: Ensemble Acceleration)**.
 
