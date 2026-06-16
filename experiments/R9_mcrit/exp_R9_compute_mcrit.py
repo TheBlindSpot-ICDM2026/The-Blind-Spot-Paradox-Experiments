@@ -71,6 +71,30 @@ def best_alt_cdf_at(data, x):
     return best_cdf, best_name
 
 
+def ks_bootstrap_expon(data, n_boot=2000, seed=42):
+    """
+    Performs a Kolmogorov-Smirnov test with parametric bootstrap (N=2000)
+    to test the null hypothesis that data follows an exponential distribution.
+    Returns the empirical p-value.
+    """
+    rng = np.random.default_rng(seed)
+    n = len(data)
+    mean_emp = np.mean(data)
+    
+    # Empirical KS statistic against Expon(scale=mean_emp)
+    D_emp, _ = stats.kstest(data, 'expon', args=(0, mean_emp))
+    
+    # Parametric bootstrap
+    boot_stats = np.empty(n_boot)
+    for i in range(n_boot):
+        boot_sample = rng.exponential(scale=mean_emp, size=n)
+        boot_mean = np.mean(boot_sample)
+        D_boot, _ = stats.kstest(boot_sample, 'expon', args=(0, boot_mean))
+        boot_stats[i] = D_boot
+        
+    return float(np.mean(boot_stats >= D_emp))
+
+
 # --------------------------------------------------------------------
 # Main
 # --------------------------------------------------------------------
@@ -112,6 +136,11 @@ def main():
 
         mean_tau = float(np.mean(data))
         eps_dkw = float(np.sqrt(np.log(2.0 / DKW_ALPHA) / (2.0 * n)))  # DKW band
+
+        # Fair/AE requirement: KS Test with parametric bootstrap (N=2000)
+        p_boot = ks_bootstrap_expon(data, n_boot=2000, seed=int(target * 1000))
+        rejected = "REJECTED (p < 0.05)" if p_boot < 0.05 else "ACCEPTED (p >= 0.05)"
+        print(f"\n  [FAIR] KS Bootstrap N=2000 (Expon approx) at De~{de_eff:.3f}: p_boot={p_boot:.4f} -> {rejected}")
 
         for lam in LAMBDAS:
             tau_det_star = lam / (de_eff - DELTA_P)
