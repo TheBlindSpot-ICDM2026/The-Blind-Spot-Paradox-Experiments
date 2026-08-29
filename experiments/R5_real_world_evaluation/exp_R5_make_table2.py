@@ -137,11 +137,11 @@ def main():
 
     caption = (
         r"Real-world validation across six streams ($30$ seeds/cell). Drift positions follow Souza et al.~\cite{souza_insects_2020} Table~2 "
-        r"(\emph{reoccurring\_balanced} retains $K{=}2$ in-stream transitions). F1 numerator is deterministic here; per-cell dispersion "
+        r"(`reoccurring\_balanced' retains $K{=}2$ in-stream transitions). F1 numerator is deterministic here; per-cell dispersion "
         r"reflects classifier initialization. Significance: seed-level sign test. The $c{=}1$ clock degrades monitoring via "
-        r"\emph{false-alarm flooding} (precision collapse), not starvation: on \emph{gradual\_balanced}, PHT+ARF($c{=}1$) emits "
+        r"`false-alarm flooding' (precision collapse), not starvation: on `gradual\_balanced', PHT+ARF($c{=}1$) emits "
         f"{arf_alarms} alarms for one drift (precision ${arf_prec}$) vs {ht_alarms} for PHT+HT (${ht_prec}$). "
-        r"$^{\ast}$\emph{abrupt\_balanced} is a weak witness (heterogeneous, partly negative jumps; neither beats false-alarm rate)."
+        r"$^{\ast}$`abrupt\_balanced' is a weak witness (heterogeneous, partly negative jumps; neither beats false-alarm rate)."
     )
 
     latex_table = [

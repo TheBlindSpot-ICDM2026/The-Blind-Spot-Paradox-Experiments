@@ -7,3 +7,5 @@ __pycache__/
 
 *.csv.gz
 *.gz
+# Mistral Vibe local session & config
+.vibe/
